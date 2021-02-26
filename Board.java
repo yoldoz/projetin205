@@ -1,44 +1,61 @@
 public class Board implements IBoard {
 
     /*Attributs*/
-    private static String nom;
-    private static Character[][] navires;
-    private static boolean[][] frappes;
+    private String nom;
+    private char navires[][] ;
+    private boolean frappes[][];
 
     /*Constructeurs*/
     public Board(String nom, int taille) {
         this.nom = nom;
-        for(int i=1;i<=taille;i++){
-            for(int j=1;j<=taille;i++){
-                navires[i][j]='.';
-                frappes[i][j]=false;
+        this.navires = new char[taille][taille];
+        this.frappes = new boolean[taille][taille];
+
+        for(int i=0;i<taille;i++){
+            for(int j=0;j<taille;j++){
+                this.navires[i][j]='.';
+                this.frappes[i][j]=false;
             }
         }
     }
 
     public Board(String nom) {
-        this(nom,10);
+        this.nom = nom;
+        this.navires = new char[10][10];
+        this.frappes = new boolean[10][10];
+        for(int i=0;i<10;++i){
+            for(int j=0;j<10;++j){
+                this.navires[i][j]='.';
+                this.frappes[i][j]=false;
+            }
+        }
     }
 
 
-    public static void print() {
-        System.out.println("-----" + nom + "-----");
+    public void print() {
+        System.out.println("-----" + this.nom + "-----");
         System.out.println("Navires : ");
-        int size = navires.length;
-        for (int i = 0; i <= size; i++) {
-                System.out.print((char)(65+i)+" ");
-            System.out.println();
-            for (int j = 1; j <= size; j++) {
-                System.out.print(navires[i][j]+" ");
+        System.out.print("  ");
+        int size = this.navires.length;
+        for (int a = 0; a < size; a++)
+            System.out.print("  "+(char)(65+a));
+        System.out.println();
+        for (int i = 0; i < size; i++) {
+                System.out.print((i+1)+" ");
+            for (int j = 0; j < size; j++) {
+                System.out.print(" "+this.navires[i][j]+" ");
             }
             System.out.println();
         }
 
         System.out.println("Frappes : ");
-        for (int k = 1; k <= size; k++) {
-                System.out.print((char)(65+k)+ " ");
-            System.out.println();
-            for (int l = 1; l <= size; l++) {
+        System.out.print("  ");
+        for (int b = 0; b < size; b++)
+            System.out.print("  "+(char)(65+b));
+        System.out.println();
+        for (int k = 0; k < size; k++) {
+                System.out.print((k+1)+" ");
+            for (int l = 0; l < size; l++) {
                 if (frappes[k][l]==false)
                     System.out.print(" . ");
                 else
@@ -72,8 +89,10 @@ public class Board implements IBoard {
                 switch(orientation){
                     case EAST: {
                         try {
-                            for(int i=y; i<=y+taille-1; i++)
-                                navires[x][i]=label;
+                            for(int i=y; i<=y+taille-1; i++) {
+                                navires[x][i] = label;
+                            }
+                            break;
                         }
                         catch(Exception e)
                         {
@@ -82,8 +101,10 @@ public class Board implements IBoard {
                     }
                     case WEST: {
                         try {
-                            for(int j=y-taille+1; j<=y; j++)
-                                navires[x][j]=label;
+                            for(int j=y-taille+1; j<=y; j++) {
+                                navires[x][j] = label;
+                            }
+                            break;
                         }
                         catch(Exception e)
                         {
@@ -92,8 +113,10 @@ public class Board implements IBoard {
                     }
                     case NORTH: {
                         try {
-                            for(int k=x-taille+1; k<=x; k++)
-                                navires[k][y]=label;
+                            for(int k=x-taille+1; k<x+1; k++) {
+                                navires[k-1][y-1] = label;
+                            }
+                            break;
                         }
                         catch(Exception e)
                         {
@@ -102,8 +125,10 @@ public class Board implements IBoard {
                     }
                     case SOUTH: {
                         try {
-                            for(int l=x; l<=x+taille-1; l++)
-                                navires[l][y]=label;
+                            for(int l=x; l<=x+taille-1; l++) {
+                                navires[l][y] = label;
+                            }
+                            break;
                         }
                         catch(Exception e)
                         {
@@ -120,7 +145,7 @@ public class Board implements IBoard {
          */
         public boolean hasShip ( int x, int y)
         {
-            if (navires[x][y].equals('.'))
+            if (navires[x][y]=='.')
             {
                 return (false);
             }
