@@ -1,3 +1,5 @@
+import java.net.NoRouteToHostException;
+
 public class Board implements IBoard {
 
     /*Attributs*/
@@ -80,63 +82,110 @@ public class Board implements IBoard {
          * @param x
          * @param y
          */
-      public void putShip (AbstractShip ship,int x, int y)
-        {
-                Character label=ship.getLabel();
-                int taille= ship.getTaille();
-                Orientation orientation= ship.getorientation();
-                this.getSize();
-                switch(orientation){
-                    case EAST: {
-                        try {
-                            for(int i=y; i<=y+taille-1; i++) {
-                                navires[x][i] = label;
-                            }
-                            break;
-                        }
-                        catch(Exception e)
-                        {
-                            System.out.println(e);
-                        }
-                    }
-                    case WEST: {
-                        try {
-                            for(int j=y-taille+1; j<=y; j++) {
-                                navires[x][j] = label;
-                            }
-                            break;
-                        }
-                        catch(Exception e)
-                        {
-                            System.out.println(e);
-                        }
-                    }
-                    case NORTH: {
-                        try {
-                            for(int k=x-taille+1; k<x+1; k++) {
-                                navires[k-1][y-1] = label;
-                            }
-                            break;
-                        }
-                        catch(Exception e)
-                        {
-                            System.out.println(e);
-                        }
-                    }
-                    case SOUTH: {
-                        try {
-                            for(int l=x; l<=x+taille-1; l++) {
-                                navires[l][y] = label;
-                            }
-                            break;
-                        }
-                        catch(Exception e)
-                        {
-                            System.out.println(e);
-                        }
-                    }
-                }
-        }
+      public void putShip (AbstractShip ship,int x, int y) throws Exception {
+          Character label = ship.getLabel();
+          int taille = ship.getTaille();
+          Orientation orientation = ship.getorientation();
+          int n = this.getSize();
+          switch (orientation) {
+              case EAST:
+                  int t = 0, z = 0;
+                  for (int i = y - 1; i <= y + taille - 2; i++) {
+                      if (x - 1 < 0 || x - 1 > n || i < 0 || i > n)
+                          z++;
+                  }
+                  if (z != 0) {
+                      throw new Exception("IMPOSSIBLE NAVIRE " + label + " SORT DE LA GRILLE!");
+                  } else {
+                      for (int i = y - 1; i <= y + taille - 2; i++) {
+                          if (navires[x - 1][i] != '.') {
+                              t++;
+                          }
+                      }
+                      if (t != 0) {
+                          throw new Exception("IMPOSSIBLE CHEVAUCHEMENT DE " + label + " AVEC UN AUTRE NAVIRE!");
+                      }
+
+                      for (int c = y; c <= y + taille - 1; c++) {
+                          navires[x - 1][c - 1] = label;
+                      }
+                  }
+                  break;
+              case WEST:
+                  int t1 = 0, z1 = 0;
+                  for (int i1 = y - taille; i1 <= y - 1; i1++) {
+                      if (x - 1 < 0 || x - 1 > n || i1 < 0 || i1 > n) {
+                          z1++;
+                      }
+                  }
+                  if (z1 != 0) {
+                      throw new Exception("IMPOSSIBLE NAVIRE " + label + " SORT DE LA GRILLE!");
+                  } else {
+                      for (int i = y - taille; i <= y - 1; i++) {
+                          if (navires[x - 1][i] != '.') {
+                              t1++;
+                          }
+                      }
+                      if (t1 != 0) {
+                          throw new Exception("IMPOSSIBLE CHEVAUCHEMENT DE " + label + " AVEC UN AUTRE NAVIRE!");
+                      } else {
+                          for (int j = y - taille; j <= y - 1; j++) {
+                              navires[x - 1][j] = label;
+                          }
+                      }
+                  }
+                  break;
+
+              case NORTH:
+                  int t2 = 0, z2 = 0;
+                  for (int i = x - taille; i < x; i++) {
+                      if (y - 1 < 0 || y - 1 > n || i < 0 || i > n)
+                          z2++;
+                  }
+                  if (z2 != 0) {
+                      throw new Exception("IMPOSSIBLE NAVIRE " + label + " SORT DE LA GRILLE!");
+                  } else {
+                      for (int i = x - taille; i < x; i++) {
+                          if (navires[i][y - 1] != '.') {
+                              t2++;
+                          }
+                      }
+                      if (t2 != 0) {
+                          throw new Exception("IMPOSSIBLE CHEVAUCHEMENT DE " + label + " AVEC UN AUTRE NAVIRE!");
+                      } else {
+                          for (int k = x - taille; k < x; k++) {
+                              navires[k][y - 1] = label;
+                          }
+                      }
+                  }
+                  break;
+              case SOUTH:
+
+                  int t3 = 0, z3 = 0;
+                  for (int i = x -1; i <= x+taille-2; i++) {
+                      if (y - 1 < 0 || y - 1 > n || i < 0 || i > n)
+                          z3++;
+                  }
+                  if (z3 != 0) {
+                      throw new Exception("IMPOSSIBLE NAVIRE " + label + " SORT DE LA GRILLE!");
+                  } else {
+                          for (int i = x - 1; i <= x+taille-2; i++) {
+                              if (navires[i][y - 1] != '.') {
+                                  t3++;
+                              }
+                          }
+                          if (t3 != 0) {
+                              throw new Exception("IMPOSSIBLE CHEVAUCHEMENT DE " + label + " AVEC UN AUTRE NAVIRE!");
+                          } else {
+                              for (int l = x-1; l <= x + taille - 2; l++) {
+                                  navires[l][y - 1] = label;
+                              }
+                          }
+                  }
+                  break;
+          }
+      }
+
         /**
          * Get if a ship is placed at the given position
          * @param x
