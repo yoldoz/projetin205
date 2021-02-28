@@ -1,21 +1,21 @@
 import java.net.NoRouteToHostException;
-
-public class Board implements IBoard {
+public class Board implements IBoard{
 
     /*Attributs*/
     private String nom;
-    private char navires[][] ;
-    private boolean frappes[][];
+    private shipState navires[][] ;
+    private Boolean frappes[][];
 
     /*Constructeurs*/
     public Board(String nom, int taille) {
         this.nom = nom;
-        this.navires = new char[taille][taille];
-        this.frappes = new boolean[taille][taille];
+        this.navires = new shipState[taille][taille];
+        this.frappes = new Boolean[taille][taille];
 
         for(int i=0;i<taille;i++){
             for(int j=0;j<taille;j++){
-                this.navires[i][j]='.';
+                navires[i][j]=null;
+                System.out.println(" . ");
                 this.frappes[i][j]=false;
             }
         }
@@ -23,14 +23,19 @@ public class Board implements IBoard {
 
     public Board(String nom) {
         this.nom = nom;
-        this.navires = new char[10][10];
-        this.frappes = new boolean[10][10];
+        this.navires = new shipState[10][10];
+        this.frappes = new Boolean[10][10];
         for(int i=0;i<10;++i){
             for(int j=0;j<10;++j){
-                this.navires[i][j]='.';
+                navires[i][j]=null;
+                System.out.println(" . ");
                 this.frappes[i][j]=false;
             }
         }
+    }
+
+    public shipState getNavires(int x, int y){
+        return(this.navires[x][y]);
     }
 
 
@@ -45,7 +50,10 @@ public class Board implements IBoard {
         for (int i = 0; i < size; i++) {
                 System.out.print((i+1)+" ");
             for (int j = 0; j < size; j++) {
-                System.out.print(" "+this.navires[i][j]+" ");
+                if(this.navires[i][j]==null)
+                    System.out.print(" . ");
+                else
+                    System.out.print(" "+this.navires[i][j].ship.getLabel()+" ");
             }
             System.out.println();
         }
@@ -58,10 +66,12 @@ public class Board implements IBoard {
         for (int k = 0; k < size; k++) {
                 System.out.print((k+1)+" ");
             for (int l = 0; l < size; l++) {
-                if (frappes[k][l]==false)
+                if (frappes[k][l]==null)
                     System.out.print(" . ");
-                else
-                    System.out.print(" x ");
+                else if (frappes[k][l]==false)
+                    System.out.print(ColorUtil.colorize(" x ", ColorUtil.Color.WHITE));
+                else if (frappes[k][l]==true)
+                    System.out.print(ColorUtil.colorize(" x ", ColorUtil.Color.RED));
             }
             System.out.println();
         }
@@ -98,7 +108,7 @@ public class Board implements IBoard {
                       throw new Exception("IMPOSSIBLE NAVIRE " + label + " SORT DE LA GRILLE!");
                   } else {
                       for (int i = y - 1; i <= y + taille - 2; i++) {
-                          if (navires[x - 1][i] != '.') {
+                          if (navires[x - 1][i] != null) {
                               t++;
                           }
                       }
@@ -107,7 +117,7 @@ public class Board implements IBoard {
                       }
 
                       for (int c = y; c <= y + taille - 1; c++) {
-                          navires[x - 1][c - 1] = label;
+                          navires[x - 1][c - 1].ship.setLabel(label);
                       }
                   }
                   break;
@@ -122,7 +132,7 @@ public class Board implements IBoard {
                       throw new Exception("IMPOSSIBLE NAVIRE " + label + " SORT DE LA GRILLE!");
                   } else {
                       for (int i = y - taille; i <= y - 1; i++) {
-                          if (navires[x - 1][i] != '.') {
+                          if (navires[x - 1][i] != null) {
                               t1++;
                           }
                       }
@@ -130,7 +140,7 @@ public class Board implements IBoard {
                           throw new Exception("IMPOSSIBLE CHEVAUCHEMENT DE " + label + " AVEC UN AUTRE NAVIRE!");
                       } else {
                           for (int j = y - taille; j <= y - 1; j++) {
-                              navires[x - 1][j] = label;
+                              navires[x - 1][j].ship.setLabel(label);
                           }
                       }
                   }
@@ -146,7 +156,7 @@ public class Board implements IBoard {
                       throw new Exception("IMPOSSIBLE NAVIRE " + label + " SORT DE LA GRILLE!");
                   } else {
                       for (int i = x - taille; i < x; i++) {
-                          if (navires[i][y - 1] != '.') {
+                          if (navires[i][y - 1] != null) {
                               t2++;
                           }
                       }
@@ -154,7 +164,7 @@ public class Board implements IBoard {
                           throw new Exception("IMPOSSIBLE CHEVAUCHEMENT DE " + label + " AVEC UN AUTRE NAVIRE!");
                       } else {
                           for (int k = x - taille; k < x; k++) {
-                              navires[k][y - 1] = label;
+                              navires[k][y - 1].ship.setLabel(label);
                           }
                       }
                   }
@@ -170,7 +180,7 @@ public class Board implements IBoard {
                       throw new Exception("IMPOSSIBLE NAVIRE " + label + " SORT DE LA GRILLE!");
                   } else {
                           for (int i = x - 1; i <= x+taille-2; i++) {
-                              if (navires[i][y - 1] != '.') {
+                              if (navires[i][y - 1] != null) {
                                   t3++;
                               }
                           }
@@ -178,7 +188,7 @@ public class Board implements IBoard {
                               throw new Exception("IMPOSSIBLE CHEVAUCHEMENT DE " + label + " AVEC UN AUTRE NAVIRE!");
                           } else {
                               for (int l = x-1; l <= x + taille - 2; l++) {
-                                  navires[l][y - 1] = label;
+                                  navires[l][y - 1].ship.setLabel(label);
                               }
                           }
                   }
@@ -194,7 +204,7 @@ public class Board implements IBoard {
          */
         public boolean hasShip ( int x, int y)
         {
-            if (navires[x][y]=='.')
+            if (navires[x][y]==null)
             {
                 return (false);
             }
@@ -208,7 +218,7 @@ public class Board implements IBoard {
          * @param x
          * @param y
          */
-        public void setHit ( boolean hit, int x, int y)
+        public void setHit ( Boolean hit, int x, int y)
         {
             frappes[x][y] = hit;
         }
@@ -219,11 +229,13 @@ public class Board implements IBoard {
          * @param y
          * @return true if the hit is successful
          */
-       public boolean getHit ( int x, int y)
+       public Boolean getHit ( int x, int y)
         {
             if (frappes[x][y])
                 return (true);
-            else
+            else if(!frappes[x][y])
                 return (false);
+            else
+                return null;
         }
 }
