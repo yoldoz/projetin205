@@ -50,10 +50,14 @@ public class Board implements IBoard{
         for (int i = 0; i < size; i++) {
                 System.out.print((i+1)+" ");
             for (int j = 0; j < size; j++) {
-                if(this.navires[i][j]==null)
-                    System.out.print(" . ");
-                else
-                    System.out.print(" "+this.navires[i][j].ship.getLabel()+" ");
+                if (this.navires[i][j] == null)
+                    System.out.print(ColorUtil.colorize(" . ", ColorUtil.Color.WHITE));
+                else {
+                    if(this.navires[i][j].isStruck())
+                        System.out.print(ColorUtil.colorize(" " + this.navires[i][j].ship.getLabel() + " ", ColorUtil.Color.RED));
+                    else
+                        System.out.print(ColorUtil.colorize(" " + this.navires[i][j].ship.getLabel() + " ", ColorUtil.Color.WHITE));
+                }
             }
             System.out.println();
         }
@@ -204,7 +208,7 @@ public class Board implements IBoard{
          */
         public boolean hasShip ( int x, int y)
         {
-            if (navires[x][y]==null)
+            if (navires[x-1][y-1]==null)
             {
                 return (false);
             }
@@ -220,7 +224,7 @@ public class Board implements IBoard{
          */
         public void setHit ( Boolean hit, int x, int y)
         {
-            frappes[x][y] = hit;
+            frappes[x-1][y-1] = hit;
         }
 
         /**
@@ -231,11 +235,62 @@ public class Board implements IBoard{
          */
        public Boolean getHit ( int x, int y)
         {
-            if (frappes[x][y])
+            if (frappes[x-1][y-1])
                 return (true);
             else if(!frappes[x][y])
                 return (false);
             else
                 return null;
         }
+
+    /**
+     * Sends a hit at the given position
+     * @param x
+     * @param y
+     * @return status for the hit (eg : strike or miss)
+     */
+    public Hit sendHit(int x, int y) throws Exception
+    {
+        Hit hit=Hit.MISS;
+        x=x-1;
+        y=y-1;
+        try {
+            if (navires[x][y] == null) {
+                hit = Hit.MISS;
+                System.out.println(" frappe ratée ");
+            } else if ((navires[x][y].ship.getLabel() == 'D') || (navires[x][y].ship.getLabel() == 'S') || (navires[x][y].ship.getLabel() == 'B') || (navires[x][y].ship.getLabel() == 'C')) {
+                this.navires[x][y].ship.addStrike();
+                if (this.navires[x][y].ship.isSunk()) {
+                    hit.setValue(this.navires[x][y].ship.getTaille());
+                    switch (this.navires[x][y].ship.getTaille()) {
+                        case 2: {
+                            hit = Hit.DESTROYER;
+                            System.out.println(this.navires[x][y].ship.getLabel() + " coulé ");
+                        }
+                        case 3: {
+                            hit = Hit.SUBMARINE;
+                            System.out.println(this.navires[x][y].ship.getLabel() + " coulé ");
+                        }
+                        case 4: {
+                            hit = Hit.BATTLESHIP;
+                            System.out.println(this.navires[x][y].ship.getLabel() + " coulé ");
+                        }
+                        case 5: {
+                            hit = Hit.CARRIER;
+                            System.out.println(this.navires[x][y].ship.getLabel() + " coulé ");
+                        }
+                    }
+                } else {
+                    hit = Hit.STIKE;
+                    System.out.println(this.navires[x][y].ship.getLabel() + " touché ");
+                }
+            }
+            return (hit);
+        }
+        catch(Exception e){
+            throw new Exception(e);
+        }
+
+    }
+
 }

@@ -10,6 +10,10 @@ public class TestBoard {
         try {A.putShip(C, 10,10);} catch (Exception e){System.out.println(e);}
         try {A.putShip(D, 5,4);} catch (Exception e){System.out.println(e);}
         try {A.putShip(S, 10,10);} catch (Exception e){System.out.println(e);}
+
+        try {A.sendHit(1,1);} catch (Exception e){System.out.println(e);}
+        A.print();
+        try {A.sendHit(3,5);} catch (Exception e){System.out.println(e);}
         A.print();
     }
 }
